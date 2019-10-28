@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
 	public Coin PREFAB_COIN;
 	public Spring PREFAB_SPRING;
 	public Player player;
+	public GameObject killLine;
 	List<Platform> platforms = new List<Platform>();
 	List<Coin> coins = new List<Coin>();
 	List<Spring> springs = new List<Spring>();
@@ -17,6 +18,9 @@ public class Game : MonoBehaviour
 	int springIndex=0;
 
 	int climbedFloor = 0;
+	float raisedFloor = -3;
+	public float floorRaisingSpeed = 0.2f;
+	public bool isGameOver = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -92,8 +96,25 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		if (isGameOver)
+		{
+
+			return;
+		}
 		if (climbedFloor < player.Y + 15) raiseFloor();
-    }
+		raisedFloor += floorRaisingSpeed * Time.deltaTime;
+		killLine.transform.position = new Vector3(5, raisedFloor,0);
+		floorRaisingSpeed = climbedFloor * 0.02f;
+		if(player.Y < raisedFloor)
+		{
+			gameOver();
+		}
+	}
+	void gameOver()
+	{
+		isGameOver = true;
+		player.kill();
+	}
 
 	void hdlCoinTriggered(Coin coin)
 	{

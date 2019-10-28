@@ -26,16 +26,13 @@ public class Player : Entity
 	Vector2 movingDirection = Vector2.zero;
 	float speedTransitionTimeElapsed = 0;
 	bool isPlayerOnGround = true;
+	bool isAlive = true;
+
 	private void Awake()
 	{
 		Player.self = this;
 	}
-	
-	// Use this for initialization
-	void Start()
-	{
-	}
-	void FixedUpdate()
+	void updateCollision()
 	{
 
 		var hitTestCenterTop = Physics2D.Raycast(this.transform.position,
@@ -49,15 +46,17 @@ public class Player : Entity
 		float hitDistanceTop = (hitTestCenterTop.point - new Vector2(this.transform.position.x, this.transform.position.y)).magnitude;
 		float hitDistanceBottom = (hitTestCenterBottom.point - new Vector2(this.transform.position.x, this.transform.position.y)).magnitude;
 
-		bool isJumping = rigidbody.velocity.y > 0;
+		bool isMovingUpward = rigidbody.velocity.y > 0;
 		bool isInsideWorldObject = hitDistanceBottom < 1.0f || hitDistanceTop < 1.0f;
-		isPlayerOnGround = (hitTestCenterBottom.transform != null || 
-			hitTestLeft.transform != null || hitTestRight.transform != null ) 
-			&& !isInsideWorldObject && ! isJumping;
+		animator.SetBool("isInside", isInsideWorldObject);
+		isPlayerOnGround = !isInsideWorldObject && (rigidbody.velocity.y==0) && (
+			hitTestCenterBottom.transform != null ||
+			hitTestLeft.transform != null ||
+			hitTestRight.transform != null);
 		//Debug.Log(hitTestCenterBottom.transform + " "+ hitDistanceBottom);
 		//	Debug.Log("IS stuck " +isInsideWorldObject + " " +hitDistanceBottom);
 
-		if (isJumping)
+		if (isMovingUpward)
 		{
 
 			collider.enabled = false;
@@ -69,11 +68,16 @@ public class Player : Entity
 				collider.enabled = true;
 			}
 		}
+	}
+	private void FixedUpdate()
+	{
+
 		fixedUpdateMove();
 	}
 	// Update is called once per frame
 	void Update()
 	{
+		updateCollision();
 		if (Input.GetKey(KeyCode.A))
 		{
 			movingDirection = Vector2.left;
@@ -93,16 +97,25 @@ public class Player : Entity
 		}
 
 		bool isLeft = rigidbody.velocity.x < 0;
-		bool isPlayerAlive = true;
 		bool isPlayerMoving = rigidbody.velocity.x != 0;//|| rigidbody.velocity.y != 0;
 
 		//turn around the sprite for left/right
 		spriteRenderer.flipX = isLeft;
 
-		animator.SetBool("isAlive", isPlayerAlive);
+		animator.SetBool("isAlive", isAlive);
 		animator.SetBool("isWalking", isPlayerMoving);
 		animator.SetBool("isOnGround", isPlayerOnGround);
 
+	}
+	public override void reset()
+	{
+		base.reset();
+		rigidbody.isKinematic = false;
+	}
+	public void kill()
+	{
+		isAlive = false;
+		rigidbody.isKinematic = true;
 	}
 	public void superJump()
 	{
