@@ -20,7 +20,7 @@ public class Game : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		int PLATFORM_COUNT = 10;
+		int PLATFORM_COUNT = 5;
 		for (int i = 0; i < PLATFORM_COUNT; i++)
 		{
 			platforms.Add(Instantiate(PREFAB_PLATFORM));
@@ -41,7 +41,7 @@ public class Game : MonoBehaviour
 	Platform getNextPlatform()
 	{
 		platformIndex = (platformIndex + 1) % platforms.Count;
-		//platforms[platformIndex].reset();
+		platforms[platformIndex].reset();
 		return platforms[platformIndex];
 	}
 	Coin getNextCoin()

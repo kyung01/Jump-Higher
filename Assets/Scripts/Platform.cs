@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Platform : MonoBehaviour
+public class Platform : Entity
 {
+	static float TIMER_WEKA_PLATFORM_DISAPPEAR = 3;
 	public enum PlatformSize { SMALL, BIG };
 
 	public List<Sprite> SPRITES_SMALL;
@@ -15,6 +16,8 @@ public class Platform : MonoBehaviour
 	public BoxCollider2D boxColliderSmall;
 	public BoxCollider2D boxColliderBig;
 	public bool isWeak;
+	bool isTouched = false;
+	float timeRemainingToDisappear = 0;
 
 
 	// Use this for initialization
@@ -26,7 +29,16 @@ public class Platform : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-
+		if(isWeak && isTouched)
+		{
+			timeRemainingToDisappear -= Time.deltaTime;
+			float ratio =Mathf.Max(0, timeRemainingToDisappear / TIMER_WEKA_PLATFORM_DISAPPEAR);
+			spriteRenderer.color = new Color(1,1,1,ratio);
+			if (timeRemainingToDisappear<0)
+			{
+				this.gameObject.SetActive(false);
+			}
+		}
 	}
 	public void init(PlatformSize size, bool isWeak)
 	{
@@ -68,5 +80,18 @@ public class Platform : MonoBehaviour
 		}
 		this.gameObject.SetActive(true);
 
+	}
+	public override void reset()
+	{
+		base.reset();
+		isWeak = false;
+		isTouched = false;
+		spriteRenderer.color = Color.white;
+		timeRemainingToDisappear = TIMER_WEKA_PLATFORM_DISAPPEAR;
+	}
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		if(collision.transform.tag == "Player")
+			isTouched = true;
 	}
 }
