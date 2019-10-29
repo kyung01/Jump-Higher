@@ -116,6 +116,7 @@ public class Player : Entity
 	{
 		isAlive = false;
 		rigidbody.isKinematic = true;
+		rigidbody.velocity = Vector2.zero;
 	}
 	public void superJump()
 	{

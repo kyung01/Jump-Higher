@@ -4,11 +4,48 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+	public delegate void DelGame(Game game);
+	public DelGame evntPlayerScoreChangd;
+	public DelGame evntGameOver;
+
+	public enum GameState {PAUSED,PLAYING,GAME_OVER}
 	public Platform PREFAB_PLATFORM;
 	public Coin PREFAB_COIN;
 	public Spring PREFAB_SPRING;
 	public Player player;
 	public GameObject killLine;
+
+	public int score = 0;
+
+	GameState state = GameState.PAUSED;
+	public void startGame()
+	{
+		state = GameState.PLAYING;
+		score = 0;
+	}
+	public GameState State {
+		set
+		{
+			this.state = value;
+			switch (state)
+			{
+				case GameState.PAUSED:
+					break;
+				case GameState.PLAYING:
+					break;
+				case GameState.GAME_OVER:
+					break;
+				default:
+					break;
+			}
+		}
+		get
+		{
+			return state;
+		}
+	}
+
+
 	List<Platform> platforms = new List<Platform>();
 	List<Coin> coins = new List<Coin>();
 	List<Spring> springs = new List<Spring>();
@@ -19,7 +56,7 @@ public class Game : MonoBehaviour
 
 	int climbedFloor = 0;
 	float raisedFloor = -3;
-	public float floorRaisingSpeed = 0.2f;
+	public float floorRaisingSpeed = 1.0f;
 	public bool isGameOver = false;
     // Start is called before the first frame update
     void Start()
@@ -37,6 +74,9 @@ public class Game : MonoBehaviour
 		{
 			springs.Add(Instantiate(PREFAB_SPRING));
 		}
+		foreach (var instant in platforms) instant.gameObject.SetActive(false);
+		foreach (var instant in coins) instant.gameObject.SetActive(false);
+		foreach (var instant in springs) instant.gameObject.SetActive(false);
 		for (int i = 0; i < coins.Count; i++)
 			coins[i].evntTriggered = hdlCoinTriggered;
 		for (int i = 0; i < springs.Count; i++)
@@ -64,7 +104,7 @@ public class Game : MonoBehaviour
 	{
 		var coin = getNextCoin();
 		int coinLocation = Random.Range(1, 10);
-		coin.animator.SetInteger("value", Random.Range(0, 3));
+		coin.setValue(Random.Range(0, 3));
 		coin.transform.position = new Vector3(coinLocation, climbedFloor, 0);
 	}
 	void raiseFloor()
@@ -96,29 +136,38 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		if (isGameOver)
+		switch (state)
 		{
-
-			return;
-		}
-		if (climbedFloor < player.Y + 15) raiseFloor();
-		raisedFloor += floorRaisingSpeed * Time.deltaTime;
-		killLine.transform.position = new Vector3(5, raisedFloor,0);
-		floorRaisingSpeed = climbedFloor * 0.02f;
-		if(player.Y < raisedFloor)
-		{
-			gameOver();
+			case GameState.PAUSED:
+				break;
+			case GameState.PLAYING:
+				if (climbedFloor < player.Y + 15) raiseFloor();
+				raisedFloor += floorRaisingSpeed * Time.deltaTime;
+				killLine.transform.position = new Vector3(5, raisedFloor, 0);
+				floorRaisingSpeed = climbedFloor * 0.02f;
+				if (player.Y < raisedFloor)
+				{
+					gameOver();
+				}
+				break;
+			case GameState.GAME_OVER:
+				break;
+			default:
+				break;
 		}
 	}
 	void gameOver()
 	{
 		isGameOver = true;
 		player.kill();
+		if (evntGameOver != null) evntGameOver(this);
 	}
 
 	void hdlCoinTriggered(Coin coin)
 	{
+		score += 1+coin.value;
 		coin.transform.position = new Vector3(0,-10,0);
+		if (evntPlayerScoreChangd != null) evntPlayerScoreChangd(this);
 	}
 	void hdlSpringActivated(Spring spring)
 	{

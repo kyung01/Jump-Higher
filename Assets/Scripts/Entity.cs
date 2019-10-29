@@ -5,6 +5,7 @@ public class Entity : MonoBehaviour
 {
 	public virtual void reset()
 	{
+		this.gameObject.SetActive(true);
 
 	}
 	// Use this for initialization
