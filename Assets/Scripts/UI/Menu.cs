@@ -8,7 +8,7 @@ public class Menu : MonoBehaviour
 	public GameObject canvasCover;
 	public GameplayUI gameplayUI;
 	public GameObject canvasGameOver;
-	public Button bttnPlay, bttnExit;
+	public Button bttnPlay, bttnExit, bttnPlayAgain, bttnExit2;
 
 	private void Awake()
 	{
@@ -16,6 +16,8 @@ public class Menu : MonoBehaviour
 		game.evntGameOver = hdlGameOver;
 		bttnPlay.onClick.AddListener(onClickPlay);
 		bttnExit.onClick.AddListener(onExit);
+		bttnPlayAgain.onClick.AddListener(onClickPlay);
+		bttnExit2.onClick.AddListener(onExit);
 	}
 	// Use this for initialization
 	void Start()
@@ -41,12 +43,15 @@ public class Menu : MonoBehaviour
 	{
 		game.startGame();
 		canvasCover.SetActive(false);
+		canvasGameOver.SetActive(false);
 		gameplayUI.gameObject.SetActive(true);
 		gameplayUI.init();
 	}
 	void onExit()
 	{
-		canvasCover.SetActive(true);
-		gameplayUI.gameObject.SetActive(false);
+		//Finish the apllication 
+
+		//canvasCover.SetActive(true);
+		//gameplayUI.gameObject.SetActive(false);
 	}
 }

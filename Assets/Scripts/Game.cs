@@ -18,11 +18,6 @@ public class Game : MonoBehaviour
 	public int score = 0;
 
 	GameState state = GameState.PAUSED;
-	public void startGame()
-	{
-		state = GameState.PLAYING;
-		score = 0;
-	}
 	public GameState State {
 		set
 		{
@@ -58,8 +53,22 @@ public class Game : MonoBehaviour
 	float raisedFloor = -3;
 	public float floorRaisingSpeed = 1.0f;
 	public bool isGameOver = false;
-    // Start is called before the first frame update
-    void Start()
+
+
+	public void startGame()
+	{
+		foreach (var instant in platforms) instant.gameObject.SetActive(false);
+		foreach (var instant in coins) instant.gameObject.SetActive(false);
+		foreach (var instant in springs) instant.gameObject.SetActive(false);
+
+		isGameOver = false;
+		climbedFloor = 0;
+		raisedFloor = -3;
+		state = GameState.PLAYING;
+		score = 0;
+	}
+	// Start is called before the first frame update
+	void Start()
     {
 		int PLATFORM_COUNT = 5;
 		for (int i = 0; i < PLATFORM_COUNT; i++)
@@ -143,6 +152,10 @@ public class Game : MonoBehaviour
 			case GameState.PLAYING:
 				if (climbedFloor < player.Y + 15) raiseFloor();
 				raisedFloor += floorRaisingSpeed * Time.deltaTime;
+				if(raisedFloor < player.Y - 5)
+				{
+					raisedFloor = player.Y - 5;
+				}
 				killLine.transform.position = new Vector3(5, raisedFloor, 0);
 				floorRaisingSpeed = climbedFloor * 0.02f;
 				if (player.Y < raisedFloor)
