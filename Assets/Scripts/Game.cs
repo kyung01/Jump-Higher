@@ -15,6 +15,8 @@ public class Game : MonoBehaviour
 	public Player player;
 	public GameObject killLine;
 
+	public AudioSource adoSrcScore;
+
 	public int score = 0;
 
 	GameState state = GameState.PAUSED;
@@ -62,6 +64,7 @@ public class Game : MonoBehaviour
 		foreach (var instant in springs) instant.gameObject.SetActive(false);
 
 		player.reset();
+		
 		isGameOver = false;
 		climbedFloor = 0;
 		raisedFloor = -3;
@@ -172,8 +175,10 @@ public class Game : MonoBehaviour
 	}
 	void gameOver()
 	{
+		State = GameState.GAME_OVER;
 		isGameOver = true;
 		player.kill();
+
 		if (evntGameOver != null) evntGameOver(this);
 	}
 
@@ -181,6 +186,7 @@ public class Game : MonoBehaviour
 	{
 		score += 1+coin.value;
 		coin.transform.position = new Vector3(0,-10,0);
+		adoSrcScore.Play();
 		if (evntPlayerScoreChangd != null) evntPlayerScoreChangd(this);
 	}
 	void hdlSpringActivated(Spring spring)

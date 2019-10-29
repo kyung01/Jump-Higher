@@ -14,6 +14,11 @@ public class Player : Entity
 	public SpriteRenderer spriteRenderer;
 	public Collider2D collider;
 
+	public AudioSource adoSrcJump;
+	public AudioSource adoSrcSuperJump;
+	public AudioSource adoSrcLand;
+	public AudioSource adoSrcDead;
+
 	public float speed = 3;
 	public float jumpSpeed = 10;
 	public float initialSuperJumperSpeed;
@@ -49,10 +54,17 @@ public class Player : Entity
 		bool isMovingUpward = rigidbody.velocity.y > 0;
 		bool isInsideWorldObject = hitDistanceBottom < 1.0f || hitDistanceTop < 1.0f;
 		animator.SetBool("isInside", isInsideWorldObject);
+		bool oldIsPlayerOnGround = isPlayerOnGround;
 		isPlayerOnGround = !isInsideWorldObject && (rigidbody.velocity.y==0) && (
 			hitTestCenterBottom.transform != null ||
 			hitTestLeft.transform != null ||
 			hitTestRight.transform != null);
+		if(isPlayerOnGround && !oldIsPlayerOnGround)
+		{
+			//player landed
+			adoSrcLand.time = 0.122f;
+			adoSrcLand.Play();
+		}
 		//Debug.Log(hitTestCenterBottom.transform + " "+ hitDistanceBottom);
 		//	Debug.Log("IS stuck " +isInsideWorldObject + " " +hitDistanceBottom);
 
@@ -77,6 +89,7 @@ public class Player : Entity
 	// Update is called once per frame
 	void Update()
 	{
+		if (!isAlive) return;
 		updateCollision();
 		if (Input.GetKey(KeyCode.A))
 		{
@@ -102,29 +115,41 @@ public class Player : Entity
 		//turn around the sprite for left/right
 		spriteRenderer.flipX = isLeft;
 
-		animator.SetBool("isAlive", isAlive);
 		animator.SetBool("isWalking", isPlayerMoving);
 		animator.SetBool("isOnGround", isPlayerOnGround);
 
+		if(this.transform.position.x < 0.5 || this.transform.position.x > 9.5)
+		{
+			float x = this.transform.position.x;
+			x = Mathf.Max(0.5f, x);
+			x = Mathf.Min(9.5f, x);
+			this.transform.position = new Vector3(x, this.transform.position.y, this.transform.position.z);
+		}
 	}
 	public override void reset()
 	{
 		base.reset();
 		isAlive = true;
+		isPlayerOnGround = true;
 		rigidbody.transform.position = new Vector3(5, 1.5f, 0);
 		rigidbody.isKinematic = false;
+		animator.SetBool("isAlive", isAlive);
 	}
 	public void kill()
 	{
+		if (!isAlive) return;
 		isAlive = false;
 		rigidbody.isKinematic = true;
 		rigidbody.velocity = Vector2.zero;
+		animator.SetBool("isAlive", isAlive);
+		adoSrcDead.Play();
 	}
 	public void superJump()
 	{
 		isSuperJumping = true;
 		rigidbody.velocity = new Vector2(rigidbody.velocity.x, initialSuperJumperSpeed);
 		collider.enabled = false;
+		adoSrcSuperJump.Play();
 
 	}
 	void jump()
@@ -132,6 +157,7 @@ public class Player : Entity
 		if (!isPlayerOnGround) return;
 		rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpSpeed);
 		collider.enabled = false;
+		adoSrcJump.Play();
 	}
 	void fixedUpdateMove()
 	{

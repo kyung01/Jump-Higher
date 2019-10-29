@@ -49,7 +49,7 @@ public class Menu : MonoBehaviour
 	}
 	void onExit()
 	{
-		//Finish the apllication 
+		//Finish the application 
 
 		//canvasCover.SetActive(true);
 		//gameplayUI.gameObject.SetActive(false);

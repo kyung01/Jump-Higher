@@ -1,9 +1,11 @@
-﻿using System;
+﻿
+
+#if (UNITY_EDITOR)
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using UnityEditor;
 using UnityEngine;
-
 public class TextureAtlasSlicer : EditorWindow
 {
 	[MenuItem("CONTEXT/TextureImporter/Slice Sprite Using XML")]
@@ -176,3 +178,4 @@ public class TextureAtlasSlicer : EditorWindow
 		}
 	}
 }
+#endif
