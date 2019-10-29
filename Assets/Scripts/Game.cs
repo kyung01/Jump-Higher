@@ -61,6 +61,7 @@ public class Game : MonoBehaviour
 		foreach (var instant in coins) instant.gameObject.SetActive(false);
 		foreach (var instant in springs) instant.gameObject.SetActive(false);
 
+		player.reset();
 		isGameOver = false;
 		climbedFloor = 0;
 		raisedFloor = -3;
@@ -119,7 +120,7 @@ public class Game : MonoBehaviour
 	void raiseFloor()
 	{
 		climbedFloor++;
-		if(climbedFloor % 5 == 2)
+		if(climbedFloor > 5 && climbedFloor % 5 == 2)
 		{
 			//third floor has a coin
 			spawnCoin();
@@ -150,11 +151,11 @@ public class Game : MonoBehaviour
 			case GameState.PAUSED:
 				break;
 			case GameState.PLAYING:
-				if (climbedFloor < player.Y + 15) raiseFloor();
+				while (climbedFloor < player.Y + 15) raiseFloor();
 				raisedFloor += floorRaisingSpeed * Time.deltaTime;
-				if(raisedFloor < player.Y - 5)
+				if(raisedFloor < player.Y - 10)
 				{
-					raisedFloor = player.Y - 5;
+					raisedFloor = player.Y - 10;
 				}
 				killLine.transform.position = new Vector3(5, raisedFloor, 0);
 				floorRaisingSpeed = climbedFloor * 0.02f;

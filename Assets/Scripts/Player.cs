@@ -110,6 +110,8 @@ public class Player : Entity
 	public override void reset()
 	{
 		base.reset();
+		isAlive = true;
+		rigidbody.transform.position = new Vector3(5, 1.5f, 0);
 		rigidbody.isKinematic = false;
 	}
 	public void kill()
