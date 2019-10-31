@@ -59,7 +59,7 @@ namespace UI
 				//Debug.Log("UPdating " +(imageBackground.canvas.scaleFactor * allowedDistance));
 				var correctedPosition = center + dis.normalized * allowedDistance;
 				//Debug.Log(imageBackground.rectTransform.position + " to " +correctedPosition);
-				updateImageCetner(correctedPosition);
+				updateImageCetner(imageBackground.transform.position);
 			}
 			else updateImageCetner(inputPosition);
 		}
