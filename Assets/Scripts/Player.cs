@@ -84,24 +84,41 @@ public class Player : Entity
 	private void FixedUpdate()
 	{
 
+		if (!isAlive) return;
 		fixedUpdateMove();
+	}
+	public void controllerMoveLeft()
+	{
+		movingDirection = Vector2.left;
+
+	}
+	public void controllerMoveRight()
+	{
+		movingDirection = Vector2.right;
+
+	}
+	public void controllerMoveStop()
+	{
+		movingDirection = Vector2.zero;
+
 	}
 	// Update is called once per frame
 	void Update()
 	{
 		if (!isAlive) return;
 		updateCollision();
+
 		if (Input.GetKey(KeyCode.A))
 		{
-			movingDirection = Vector2.left;
+			controllerMoveLeft();
 		}
 		else if (Input.GetKey(KeyCode.D))
 		{
-			movingDirection = Vector2.right;
+			controllerMoveRight();
 		}
 		else
 		{
-			movingDirection = Vector2.zero;
+			//controllerMoveStop();
 		}
 		if (Input.GetKey(KeyCode.W))
 		{
@@ -152,7 +169,7 @@ public class Player : Entity
 		adoSrcSuperJump.Play();
 
 	}
-	void jump()
+	public void jump()
 	{
 		if (!isPlayerOnGround) return;
 		rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpSpeed);

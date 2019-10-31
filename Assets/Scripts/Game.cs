@@ -9,6 +9,8 @@ public class Game : MonoBehaviour
 	public DelGame evntGameOver;
 
 	public enum GameState {PAUSED,PLAYING,GAME_OVER}
+	public GameObject PREFAB_CLOUD;
+
 	public Platform PREFAB_PLATFORM;
 	public Coin PREFAB_COIN;
 	public Spring PREFAB_SPRING;
@@ -43,10 +45,12 @@ public class Game : MonoBehaviour
 	}
 
 
+	List<GameObject> clouds = new List<GameObject>();
 	List<Platform> platforms = new List<Platform>();
 	List<Coin> coins = new List<Coin>();
 	List<Spring> springs = new List<Spring>();
 
+	int cloudIndex = 0;
 	int platformIndex = 0;
 	int coinIndex = 0;
 	int springIndex=0;
@@ -162,7 +166,7 @@ public class Game : MonoBehaviour
 				}
 				killLine.transform.position = new Vector3(5, raisedFloor, 0);
 				floorRaisingSpeed = climbedFloor * 0.02f;
-				if (player.Y < raisedFloor)
+				if (player.Y -1.0f< raisedFloor)
 				{
 					gameOver();
 				}

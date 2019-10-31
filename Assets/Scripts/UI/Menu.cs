@@ -5,10 +5,13 @@ using System.Collections;
 public class Menu : MonoBehaviour
 {
 	public Game game;
+	public Player player;
 	public GameObject canvasCover;
 	public GameplayUI gameplayUI;
+	public GameObject canvasGameplay;
 	public GameObject canvasGameOver;
-	public Button bttnPlay, bttnExit, bttnPlayAgain, bttnExit2;
+	public Button bttnPlay, bttnExit, bttnPlayAgain, bttnExit2, bttnJump;
+	public UI.ThumbController thumbController;
 
 	private void Awake()
 	{
@@ -18,6 +21,8 @@ public class Menu : MonoBehaviour
 		bttnExit.onClick.AddListener(onExit);
 		bttnPlayAgain.onClick.AddListener(onClickPlay);
 		bttnExit2.onClick.AddListener(onExit);
+		bttnJump.onClick.AddListener(onJump);
+		thumbController.enabled = false;
 	}
 	// Use this for initialization
 	void Start()
@@ -29,10 +34,29 @@ public class Menu : MonoBehaviour
 	void Update()
 	{
 
+		switch (thumbController.getDirection())
+		{
+			case -1:
+				player.controllerMoveLeft();
+				break;
+			case 1:
+				player.controllerMoveRight();
+				break;
+			case 0:
+				player.controllerMoveStop();
+				break;
+		}
+
+	}
+	void onJump()
+	{
+		player.jump();
 	}
 	void hdlGameOver(Game game)
 	{
+		canvasGameplay.gameObject.SetActive(false);
 		canvasGameOver.gameObject.SetActive(true);
+		thumbController.enabled = false;
 	}
 	void hdlGameScoreChanged(Game game)
 	{
@@ -45,6 +69,7 @@ public class Menu : MonoBehaviour
 		canvasCover.SetActive(false);
 		canvasGameOver.SetActive(false);
 		gameplayUI.gameObject.SetActive(true);
+		thumbController.enabled = true;
 		gameplayUI.init();
 	}
 	void onExit()
